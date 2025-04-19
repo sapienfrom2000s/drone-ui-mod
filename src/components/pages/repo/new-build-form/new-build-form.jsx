@@ -7,6 +7,7 @@ import React, {
 
 import Button from 'components/shared/button';
 import Form, { Field, FormSection } from 'components/shared/form';
+import Switch from 'components/shared/switch';
 import { useRepoBranches } from 'hooks/swr';
 
 import css from './new-build-form.module.scss';
@@ -28,6 +29,7 @@ const NewBuildForm = ({
     key: '',
     value: '',
   });
+  const [isTextMode, setIsTextMode] = useState(false);
 
   // Define the deployment environment options
   const deploymentOptions = [
@@ -108,15 +110,37 @@ const NewBuildForm = ({
   return (
     <Form className={cx('new-build-form')}>
       <FormSection className={cx('new-build-form-column')}>
-        <Field.SearchableSelect
-          label="Branch"
-          placeholder="Select Branch"
-          value={state.target}
-          options={branchOptions}
-          loading={branchesLoading}
-          width={400}
-          onChange={handleFieldChangePatch('target')}
-        />
+        <div className={cx('branch-selection-container')}>
+          <div className={cx('branch-input-container')}>
+            {isTextMode ? (
+              <Field.Input
+                label="Branch"
+                placeholder="Enter Branch Name"
+                value={state.target}
+                name="branch"
+                width={400}
+                onChange={(e) => handleFieldChangePatch('target')(e.target.value)}
+              />
+            ) : (
+              <Field.SearchableSelect
+                label="Branch"
+                placeholder="Select Branch"
+                value={state.target}
+                options={branchOptions}
+                loading={branchesLoading}
+                width={400}
+                onChange={handleFieldChangePatch('target')}
+              />
+            )}
+          </div>
+          <div className={cx('toggle-switch-container')}>
+            <Switch
+              id="branch-input-mode"
+              checked={isTextMode}
+              onChange={setIsTextMode}
+            />
+          </div>
+        </div>
       </FormSection>
       <FormSection title="Parameters" className={cx('new-build-form-column')}>
         {state.parameters.length ? (
