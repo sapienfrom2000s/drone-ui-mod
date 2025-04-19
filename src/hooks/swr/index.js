@@ -8,6 +8,7 @@ import useBranches from './use-branches';
 import useCrons from './use-crons';
 import useDeployments from './use-deployments';
 import useOrgSecrets from './use-org-secrets';
+import useRepoBranches from './use-repo-branches';
 import useSecrets from './use-secrets';
 import useTemplates from './use-templates';
 import { useUserList } from './user';
@@ -22,6 +23,7 @@ export {
   useBranches,
   useDeployments,
   useRepo,
+  useRepoBranches,
   useSecrets,
   useOrgSecrets,
   useCard,

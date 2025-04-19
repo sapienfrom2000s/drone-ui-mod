@@ -213,7 +213,13 @@ const Repo = ({ user }) => {
             isShowing={isModalShowing}
             hide={toggleModal}
           >
-            <NewBuildForm handleSubmit={handleNewBuildSubmit} handleCancel={toggleModal} target={target} parameters={parameters} />
+            <NewBuildForm
+              handleSubmit={handleNewBuildSubmit}
+              handleCancel={toggleModal}
+              target={target}
+              parameters={parameters}
+              repoName={`${name}`}
+            />
           </Modal>
         </>
       </Route>

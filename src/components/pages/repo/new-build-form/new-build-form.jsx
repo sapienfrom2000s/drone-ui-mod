@@ -6,6 +6,7 @@ import React, {
 
 import Button from 'components/shared/button';
 import Form, { Field, FormSection } from 'components/shared/form';
+import { useRepoBranches } from 'hooks/swr';
 
 import css from './new-build-form.module.scss';
 
@@ -15,7 +16,8 @@ const NewBuildForm = ({
   handleSubmit,
   handleCancel,
   target,
-  parameters
+  parameters,
+  repoName,
 }) => {
   const [state, setState] = useState({
     target,
@@ -56,15 +58,33 @@ const NewBuildForm = ({
   const handleFieldChange = (field) => (event) => {
     setState((prev) => ({ ...prev, [field]: event.target.value.trim() }));
   };
+
+  const handleFieldChangePatch = (field) => (event) => {
+    setState((prev) => ({ ...prev, [field]: event }));
+  };
+
+  // Fetch branches for the repository
+  const { data: branches, isLoading: branchesLoading } = useRepoBranches(repoName);
+
+  // Convert branches to options format for the dropdown
+  const branchOptions = branches && branches.length
+    ? branches.map((branch) => ({
+      value: branch,
+      label: branch,
+    }))
+    : [];
+
   return (
     <Form className={cx('new-build-form')}>
       <FormSection className={cx('new-build-form-column')}>
-        <Field.Input
+        <Field.SearchableSelect
           label="Branch"
           placeholder="<default branch name>"
           value={state.target}
-          name="branch"
-          onChange={handleFieldChange('target')}
+          options={branchOptions}
+          loading={branchesLoading}
+          width={400}
+          onChange={handleFieldChangePatch('target')}
         />
       </FormSection>
       <FormSection title="Parameters" className={cx('new-build-form-column')}>
@@ -112,8 +132,9 @@ const NewBuildForm = ({
 };
 
 NewBuildForm.defaultProps = {
-  target: "",
+  target: '',
   parameters: [],
+  repoName: '',
 };
 
 NewBuildForm.propTypes = {
@@ -125,8 +146,9 @@ NewBuildForm.propTypes = {
       key: PropTypes.string,
       value: PropTypes.string,
       id: PropTypes.string,
-    })
+    }),
   ),
+  repoName: PropTypes.string,
 };
 
 export default NewBuildForm;
