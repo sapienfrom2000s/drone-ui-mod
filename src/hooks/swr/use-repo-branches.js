@@ -21,7 +21,7 @@ const useRepoBranches = (repoName) => {
 
         // Extract branch names from the new response format
         // New response format: {"branches":[{"name":"branch-name","created_at":"date","created_by":"user"}],"repository":"repo-name"}
-        const branchNames = response.branches ? response.branches.map(branch => branch.name) : [];
+        const branchNames = response.branches ? response.branches.map((branch) => branch.name) : [];
         setData(branchNames);
         setError(null);
       } catch (err) {

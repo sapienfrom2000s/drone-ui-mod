@@ -2,6 +2,7 @@ import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, {
   useState,
+  useEffect,
 } from 'react';
 
 import Button from 'components/shared/button';
@@ -27,6 +28,33 @@ const NewBuildForm = ({
     key: '',
     value: '',
   });
+
+  // Define the deployment environment options
+  const deploymentOptions = [
+    { value: 'alpha', label: 'alpha' },
+    { value: 'beta', label: 'beta' },
+    { value: 'gamma', label: 'gamma' },
+    { value: 'test', label: 'test' },
+    { value: 'epsilon', label: 'epsilon' },
+    { value: 'analytics-beta', label: 'analytics-beta' },
+    { value: 'staging', label: 'staging' },
+  ];
+
+  // Add the DEPLOY_TO parameter when component mounts
+  useEffect(() => {
+    // Check if DEPLOY_TO parameter already exists
+    const deployToExists = state.parameters.some((param) => param.key === 'DEPLOY_TO');
+
+    if (!deployToExists) {
+      setState((prev) => ({
+        ...prev,
+        parameters: [
+          ...prev.parameters,
+          { key: 'DEPLOY_TO', value: 'alpha', id: 'deploy-to-param' },
+        ],
+      }));
+    }
+  }, [state.parameters]);
   const handleAddParameter = () => {
     if (parameterState.key && parameterState.value) {
       setState(
@@ -49,12 +77,15 @@ const NewBuildForm = ({
   const handleParameterChange = (field) => (event) => {
     setParameterState((prev) => ({ ...prev, [field]: event.target.value.trim() }));
   };
+
   const handleSubmitMiddleware = (event) => {
     event.preventDefault();
     handleSubmit(state);
     handleCancel();
   };
 
+  // This function is kept for potential future use with regular input fields
+  // eslint-disable-next-line no-unused-vars
   const handleFieldChange = (field) => (event) => {
     setState((prev) => ({ ...prev, [field]: event.target.value.trim() }));
   };
@@ -79,7 +110,7 @@ const NewBuildForm = ({
       <FormSection className={cx('new-build-form-column')}>
         <Field.SearchableSelect
           label="Branch"
-          placeholder="<default branch name>"
+          placeholder="Select Branch"
           value={state.target}
           options={branchOptions}
           loading={branchesLoading}
@@ -90,21 +121,51 @@ const NewBuildForm = ({
       <FormSection title="Parameters" className={cx('new-build-form-column')}>
         {state.parameters.length ? (
           <div className={cx('new-build-form-parameters-list')}>
-            {state.parameters.map(({ key, value, id }) => (
-              <div className={cx('new-build-form-parameters')} key={id}>
-                <Field.Input
-                  value={key}
-                  name={key}
-                  readOnly
-                />
-                <Field.Input
-                  name={value}
-                  value={value}
-                  readOnly
-                />
-                <Button theme="plain" type="button" onClick={handleRemoveParameter(id)}>Remove</Button>
-              </div>
-            ))}
+            {state.parameters.map(({ key, value, id }) => {
+              // Special handling for DEPLOY_TO parameter
+              if (key === 'DEPLOY_TO') {
+                return (
+                  <div className={cx('new-build-form-parameters')} key={id}>
+                    <Field.Input
+                      value={key}
+                      name={key}
+                      readOnly
+                    />
+                    <Field.SearchableSelect
+                      name="deploy-to-value"
+                      value={value}
+                      options={deploymentOptions}
+                      width={200}
+                      onChange={(selectedValue) => {
+                        setState((prev) => ({
+                          ...prev,
+                          parameters: prev.parameters.map((param) => (
+                            param.id === id ? { ...param, value: selectedValue } : param
+                          )),
+                        }));
+                      }}
+                    />
+                  </div>
+                );
+              }
+
+              // Default rendering for other parameters
+              return (
+                <div className={cx('new-build-form-parameters')} key={id}>
+                  <Field.Input
+                    value={key}
+                    name={key}
+                    readOnly
+                  />
+                  <Field.Input
+                    name={value}
+                    value={value}
+                    readOnly
+                  />
+                  <Button theme="plain" type="button" onClick={handleRemoveParameter(id)}>Remove</Button>
+                </div>
+              );
+            })}
           </div>
         ) : null}
         <div className={cx('new-build-form-parameters-fields')}>
