@@ -86,14 +86,10 @@ const NewBuildForm = ({
     handleCancel();
   };
 
-  // This function is kept for potential future use with regular input fields
-  // eslint-disable-next-line no-unused-vars
   const handleFieldChange = (field) => (event) => {
-    setState((prev) => ({ ...prev, [field]: event.target.value.trim() }));
-  };
-
-  const handleFieldChangePatch = (field) => (event) => {
-    setState((prev) => ({ ...prev, [field]: event }));
+    // Handle both direct values and event objects with target.value
+    const newValue = event && event.target ? event.target.value.trim() : event;
+    setState((prev) => ({ ...prev, [field]: newValue }));
   };
 
   // Fetch branches for the repository
@@ -119,7 +115,9 @@ const NewBuildForm = ({
                 value={state.target}
                 name="branch"
                 width={400}
-                onChange={(e) => handleFieldChangePatch('target')(e.target.value)}
+                onChange={(e) => {
+                  handleFieldChange('target')(e)
+                }}
               />
             ) : (
               <Field.SearchableSelect
@@ -129,7 +127,9 @@ const NewBuildForm = ({
                 options={branchOptions}
                 loading={branchesLoading}
                 width={400}
-                onChange={handleFieldChangePatch('target')}
+                onChange={(e) => {
+                  handleFieldChange('target')(e)
+                }}
               />
             )}
           </div>
