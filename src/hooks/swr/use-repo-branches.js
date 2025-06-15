@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { axiosWrapper } from 'utils';
+import { axiosWrapper } from "utils";
 
 const useRepoBranches = (repoName) => {
   const [data, setData] = useState([]);
@@ -17,17 +17,21 @@ const useRepoBranches = (repoName) => {
       try {
         setIsLoading(true);
         // Updated API endpoint format: /branches/:name instead of /list-branches?repoName=$name
-        const response = await axiosWrapper(`${process.env.REACT_APP_BRANCHES_API}/${repoName}`);
+        const response = await axiosWrapper(
+          `${process.env.REACT_APP_DEPLOYMENTS_API}/${repoName}`,
+        );
 
         // Extract branch names from the new response format
         // New response format: {"branches":[{"name":"branch-name","created_at":"date","created_by":"user"}],"repository":"repo-name"}
-        const branchNames = response.branches ? response.branches.map((branch) => branch.name) : [];
+        const branchNames = response.branches
+          ? response.branches.map((branch) => branch.name)
+          : [];
         setData(branchNames);
         setError(null);
       } catch (err) {
         setError(err);
         // eslint-disable-next-line no-console
-        console.error('Error fetching branches:', err);
+        console.error("Error fetching branches:", err);
       } finally {
         setIsLoading(false);
       }
