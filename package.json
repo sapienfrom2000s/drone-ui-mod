@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "postbuild": "rm -rf ./dist/files; mv ./build ./dist/files",
     "serve": "npx http-server ./build -p 3001",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
