@@ -16,13 +16,13 @@ const useRepoBranches = (repoName) => {
 
       try {
         setIsLoading(true);
-        // Updated API endpoint format: /branches/:name instead of /list-branches?repoName=$name
+        // Updated API endpoint format: /deployments/branches/:name
         const response = await axiosWrapper(
-          `${process.env.REACT_APP_DEPLOYMENTS_API}/${repoName}`,
+          `/deployments/branches/${repoName}`,
         );
 
         // Extract branch names from the new response format
-        // New response format: {"branches":[{"name":"branch-name","created_at":"date","created_by":"user"}],"repository":"repo-name"}
+        // New response format: {"branches":[{"name":"branch-name","created_at":"date"]}
         const branchNames = response.branches
           ? response.branches.map((branch) => branch.name)
           : [];
