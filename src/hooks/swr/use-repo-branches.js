@@ -18,7 +18,7 @@ const useRepoBranches = (repoName) => {
         setIsLoading(true);
         // Updated API endpoint format: /deployments/branches/:name
         const response = await axiosWrapper(
-          `https://drone.devops.peoplebox.ai/deployments/branches/${repoName}`,
+          `https://devprod.devops.peoplebox.ai/deployments/branches/${repoName}`,
         );
 
         // Extract branch names from the new response format
